@@ -5,24 +5,23 @@ export default function (props) {
 
   const playlists = props.playlists;
 
+  const menus = ['albums', 'artists', 'lyrics', 'stations']
+
+
   return (
     <sidebar>
       <img src="juke.svg" className="logo"/>
-      <section>
-        <h4 className="menu-item">
-          <Link to='/albums'>ALBUMS</Link>
-        </h4>
-      </section>
-      <section>
-        <h4 className="menu-item">
-          <Link to='/artists'>ARTISTS</Link>
-        </h4>
-      </section>
-      <section>
-        <h4 className="menu-item">
-          <Link to='/lyrics'>LYRICS</Link>
-        </h4>
-      </section>
+      {
+        menus.map((menu, index)=>{
+          return (
+              <section key={index}>
+                <h4 className="menu-item">
+                  <Link to={`/${menu}`}>{menu.toUpperCase()}</Link>
+                </h4>
+              </section>
+            )
+        })
+      }
       <hr />
       <section>
         <h4 className="text-muted">PLAYLISTS</h4>
