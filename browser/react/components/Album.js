@@ -1,13 +1,12 @@
 import React from 'react';
 import Songs from '../components/Songs';
 
-export default function (props) {
-
-  const album = props.selectedAlbum;
-  const currentSong = props.currentSong;
-  const isPlaying = props.isPlaying;
-  const toggleOne = props.toggleOne;
-
+export default function ({
+  album,
+  currentSong,
+  isPlaying,
+  toggleOne
+}) {
   return (
     <div className="album">
       <div>

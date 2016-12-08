@@ -3,7 +3,7 @@ import {Link} from 'react-router';
 
 export default function (props) {
 
-  const albums = props.albums;
+  const albums = props.albums.list;
 
   return (
     <div>
@@ -27,4 +27,4 @@ export default function (props) {
       </div>
     </div>
   );
-};
+}

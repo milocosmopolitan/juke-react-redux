@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import {Router, Route, hashHistory, IndexRedirect, IndexRoute} from 'react-router';
 import { Provider } from 'react-redux';
 
-import AlbumsContainer from './containers/AlbumsContainer';
-import AlbumContainer from './containers/AlbumContainer';
+import {AlbumsContainer} from './containers/AlbumsContainer';
+import {AlbumContainer} from './containers/AlbumContainer';
 import ArtistContainer from './containers/ArtistContainer';
 import FilterableArtistsContainer from './containers/FilterableArtistsContainer';
 import NewPlaylistContainer from './containers/NewPlaylistContainer';
