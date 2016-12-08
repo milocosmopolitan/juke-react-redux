@@ -1,7 +1,9 @@
 import {
   RECEIVE_PLAYLISTS,
   RECEIVE_PLAYLIST,
-  RECEIVE_SONGS
+  RECEIVE_SONGS,
+  HANDLE_CHANGE,
+  HANDLE_ERROR
 } from '../constants';
 
 import axios from 'axios';
@@ -23,6 +25,28 @@ export const receiveAllSongs = songs => ({
   type: RECEIVE_SONGS,
   songs
 });
+
+export const handleChange = event => ({
+  type: HANDLE_CHANGE,
+  songId: event.target.value,
+  event
+});
+
+export const handleError = () => ({
+  type: HANDLE_ERROR
+});
+// export const handleSubmit = event => {
+//   return {
+//   type: HANDLE_SUBMIT,
+
+//   }
+// };
+
+export const changeSongId = event => {
+  return dispatch => {
+    dispatch(handleChange(event));
+  }
+}
 
 export const getPlaylistById = playlistId => {
 
@@ -60,6 +84,7 @@ export const loadAllSongs = () => {
   };
 };
 
+
 export const addSongToPlaylist = (playlistId, songId) => {
 
   return (dispatch, getState) => {
@@ -83,4 +108,17 @@ export const addSongToPlaylist = (playlistId, songId) => {
 
   };
 
+};
+
+export const submitNewPlaylist = event => {
+
+  return (dispatch, getState) => {
+    event.preventDefault();
+    console.log(getState())
+    const playlistId = getState().playlists.selected.id;
+    const songId = getState().playlists.songId;
+    console.log('this is playelistID: ', playlistId, '  THis is songID: ', songId)
+    dispatch(addSongToPlaylist(playlistId, songId))
+      .catch(handleError);
+  }
 };

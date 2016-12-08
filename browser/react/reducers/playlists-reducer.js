@@ -1,14 +1,18 @@
 import {
   RECEIVE_PLAYLISTS,
   RECEIVE_PLAYLIST,
-  RECEIVE_SONGS
+  RECEIVE_SONGS,
+  HANDLE_CHANGE,
+  HANDLE_ERROR
 } from '../constants';
 
 import {convertSong} from '../utils';
 
 const initialPlaylistsState = {
   selected: {},
-  list: []
+  list: [],
+  songId: 1,
+  error: false
 };
 
 export default function (state = initialPlaylistsState, action) {
@@ -25,6 +29,15 @@ export default function (state = initialPlaylistsState, action) {
       newState.selected = action.playlist;
       newState.selected.songs = newState.selected.songs.map(convertSong);
       break;
+
+    case HANDLE_CHANGE:
+      newState.songId = action.songId || 1;
+      newState.error = action.error || false;
+      break;
+
+      case HANDLE_ERROR:
+        newState.error = true;
+        break;
 
     default:
       return state;

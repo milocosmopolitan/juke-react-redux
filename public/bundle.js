@@ -28310,6 +28310,8 @@
 	var RECEIVE_PLAYLISTS = exports.RECEIVE_PLAYLISTS = 'RECEIVE_PLAYLISTS';
 	var RECEIVE_PLAYLIST = exports.RECEIVE_PLAYLIST = 'RECEIVE_PLAYLIST';
 	var RECEIVE_SONGS = exports.RECEIVE_SONGS = 'RECEIVE_SONGS';
+	var HANDLE_CHANGE = exports.HANDLE_CHANGE = 'HANDLE_CHANGE';
+	var HANDLE_ERROR = exports.HANDLE_ERROR = 'HANDLE_ERROR';
 	
 	// Player
 	var START_PLAYING = exports.START_PLAYING = 'START_PLAYING';
@@ -28535,6 +28537,15 @@
 	      newState.selected.songs = newState.selected.songs.map(_utils.convertSong);
 	      break;
 	
+	    case _constants.HANDLE_CHANGE:
+	      newState.songId = action.songId || 1;
+	      newState.error = action.error || false;
+	      break;
+	
+	    case _constants.HANDLE_ERROR:
+	      newState.error = true;
+	      break;
+	
 	    default:
 	      return state;
 	
@@ -28549,7 +28560,9 @@
 	
 	var initialPlaylistsState = {
 	  selected: {},
-	  list: []
+	  list: [],
+	  songId: 1,
+	  error: false
 	};
 
 /***/ },
@@ -30351,7 +30364,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.addSongToPlaylist = exports.loadAllSongs = exports.addNewPlaylist = exports.getPlaylistById = exports.receiveAllSongs = exports.receivePlaylist = exports.receivePlaylists = undefined;
+	exports.submitNewPlaylist = exports.addSongToPlaylist = exports.loadAllSongs = exports.addNewPlaylist = exports.getPlaylistById = exports.changeSongId = exports.handleError = exports.handleChange = exports.receiveAllSongs = exports.receivePlaylist = exports.receivePlaylists = undefined;
 	
 	var _constants = __webpack_require__(265);
 	
@@ -30383,6 +30396,32 @@
 	  return {
 	    type: _constants.RECEIVE_SONGS,
 	    songs: songs
+	  };
+	};
+	
+	var handleChange = exports.handleChange = function handleChange(event) {
+	  return {
+	    type: _constants.HANDLE_CHANGE,
+	    songId: event.target.value,
+	    event: event
+	  };
+	};
+	
+	var handleError = exports.handleError = function handleError() {
+	  return {
+	    type: _constants.HANDLE_ERROR
+	  };
+	};
+	// export const handleSubmit = event => {
+	//   return {
+	//   type: HANDLE_SUBMIT,
+	
+	//   }
+	// };
+	
+	var changeSongId = exports.changeSongId = function changeSongId(event) {
+	  return function (dispatch) {
+	    dispatch(handleChange(event));
 	  };
 	};
 	
@@ -30436,6 +30475,18 @@
 	
 	      dispatch(receivePlaylist(newSelectedPlaylist));
 	    });
+	  };
+	};
+	
+	var submitNewPlaylist = exports.submitNewPlaylist = function submitNewPlaylist(event) {
+	
+	  return function (dispatch, getState) {
+	    event.preventDefault();
+	    console.log(getState());
+	    var playlistId = getState().playlists.selected.id;
+	    var songId = getState().playlists.songId;
+	    console.log('this is playelistID: ', playlistId, '  THis is songID: ', songId);
+	    dispatch(addSongToPlaylist(playlistId, songId)).catch(handleError);
 	  };
 	};
 
@@ -32069,10 +32120,6 @@
 	  value: true
 	});
 	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
 	var _react = __webpack_require__(1);
 	
 	var _react2 = _interopRequireDefault(_react);
@@ -32087,88 +32134,33 @@
 	
 	var _playlists = __webpack_require__(292);
 	
+	var _reactRedux = __webpack_require__(233);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+	  console.log('This is the state', state);
+	  return {
+	    songs: state.songs,
+	    error: state.playlists.error,
+	    songId: state.playlists.songId
+	  };
+	};
 	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var AddSongContainer = function (_React$Component) {
-	  _inherits(AddSongContainer, _React$Component);
-	
-	  function AddSongContainer(props) {
-	    _classCallCheck(this, AddSongContainer);
-	
-	    var _this = _possibleConstructorReturn(this, (AddSongContainer.__proto__ || Object.getPrototypeOf(AddSongContainer)).call(this, props));
-	
-	    _this.state = Object.assign({
-	      songId: 1,
-	      error: false
-	    }, _store2.default.getState());
-	    _this.handleChange = _this.handleChange.bind(_this);
-	    _this.handleSubmit = _this.handleSubmit.bind(_this);
-	    return _this;
-	  }
-	
-	  _createClass(AddSongContainer, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var _this2 = this;
-	
-	      this.unsubscribe = _store2.default.subscribe(function () {
-	        _this2.setState(_store2.default.getState());
-	      });
-	
-	      _store2.default.dispatch((0, _playlists.loadAllSongs)());
+	var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
+	  dispatch((0, _playlists.loadAllSongs)());
+	  return {
+	    handleChange: function handleChange(event) {
+	      dispatch((0, _playlists.changeSongId)(event));
+	    },
+	    handleSubmit: function handleSubmit(event) {
+	      dispatch((0, _playlists.submitNewPlaylist)(event));
 	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      this.unsubscribe();
-	    }
-	  }, {
-	    key: 'handleChange',
-	    value: function handleChange(evt) {
-	      this.setState({
-	        songId: evt.target.value,
-	        error: false
-	      });
-	    }
-	  }, {
-	    key: 'handleSubmit',
-	    value: function handleSubmit(evt) {
-	      var _this3 = this;
 	
-	      evt.preventDefault();
+	  };
+	};
 	
-	      var playlistId = this.state.playlists.selected.id;
-	      var songId = this.state.songId;
-	
-	      _store2.default.dispatch((0, _playlists.addSongToPlaylist)(playlistId, songId)).catch(function () {
-	        return _this3.setState({ error: true });
-	      });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	
-	      var songs = this.state.songs;
-	      var error = this.state.error;
-	
-	      return _react2.default.createElement(_AddSong2.default, _extends({}, this.props, {
-	        songs: songs,
-	        error: error,
-	        handleChange: this.handleChange,
-	        handleSubmit: this.handleSubmit }));
-	    }
-	  }]);
-	
-	  return AddSongContainer;
-	}(_react2.default.Component);
-	
-	exports.default = AddSongContainer;
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_AddSong2.default);
 
 /***/ },
 /* 321 */
@@ -32181,7 +32173,7 @@
 	});
 	
 	exports.default = function (props) {
-	
+	  console.log(props);
 	  var songs = props.songs;
 	  var error = props.error;
 	  var handleChange = props.handleChange;
