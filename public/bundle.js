@@ -29826,6 +29826,8 @@
 	var toggleSong = exports.toggleSong = function toggleSong(song, list) {
 	  return function (dispatch, getState) {
 	    var currentState = getState().player;
+	
+	    console.log(currentState);
 	    if (currentState.currentSong.id === song.id) {
 	      dispatch(currentState.isPlaying ? pause() : play());
 	    } else {
@@ -32502,7 +32504,7 @@
 	      { className: 'col-xs-10' },
 	      props.children && _react2.default.cloneElement(props.children, props)
 	    ),
-	    _react2.default.createElement(_PlayerContainer2.default, null)
+	    _react2.default.createElement(_PlayerContainer.PlayerContainer, null)
 	  );
 	};
 	
@@ -32516,8 +32518,6 @@
 	
 	var _PlayerContainer = __webpack_require__(328);
 	
-	var _PlayerContainer2 = _interopRequireDefault(_PlayerContainer);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ },
@@ -32681,10 +32681,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	exports.PlayerContainer = undefined;
 	
 	var _react = __webpack_require__(1);
 	
@@ -32694,9 +32691,7 @@
 	
 	var _audio2 = _interopRequireDefault(_audio);
 	
-	var _store = __webpack_require__(262);
-	
-	var _store2 = _interopRequireDefault(_store);
+	var _reactRedux = __webpack_require__(233);
 	
 	var _player = __webpack_require__(283);
 	
@@ -32706,74 +32701,39 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+	  //console.log('mapStateToProps',state);
+	  return {
+	    currentSong: state.player.currentSong,
+	    currentSongList: state.player.currentSongList,
+	    isPlaying: state.player.isPlaying,
+	    progress: state.player.progress
+	  };
+	};
 	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
 	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	  _audio2.default.addEventListener('ended', function () {
+	    dispatch((0, _player.next)());
+	  });
+	  _audio2.default.addEventListener('timeupdate', function () {
+	    dispatch((0, _player.setProgress)(_audio2.default.currentTime / _audio2.default.duration));
+	  });
 	
-	var _class = function (_Component) {
-	  _inherits(_class, _Component);
-	
-	  function _class() {
-	    _classCallCheck(this, _class);
-	
-	    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this));
-	
-	    _this.state = _store2.default.getState().player;
-	    _this.toggle = _this.toggle.bind(_this);
-	    return _this;
-	  }
-	
-	  _createClass(_class, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      var _this2 = this;
-	
-	      _audio2.default.addEventListener('ended', this.next);
-	      _audio2.default.addEventListener('timeupdate', function () {
-	        _store2.default.dispatch((0, _player.setProgress)(_audio2.default.currentTime / _audio2.default.duration));
-	      });
-	
-	      this.unsubscribe = _store2.default.subscribe(function () {
-	        _this2.setState(_store2.default.getState().player);
-	      });
+	  return {
+	    prev: function prev() {
+	      dispatch((0, _player.previous)());
+	    },
+	    toggle: function toggle(song, list) {
+	      dispatch((0, _player.toggleSong)(song, list));
+	    },
+	    next: function next() {
+	      dispatch((0, _player.next)());
 	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      this.unsubscribe();
-	    }
-	  }, {
-	    key: 'next',
-	    value: function next() {
-	      _store2.default.dispatch((0, _player.next)());
-	    }
-	  }, {
-	    key: 'prev',
-	    value: function prev() {
-	      _store2.default.dispatch((0, _player.previous)());
-	    }
-	  }, {
-	    key: 'toggle',
-	    value: function toggle() {
-	      _store2.default.dispatch((0, _player.toggleSong)(this.state.currentSong, this.state.currentSongList));
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(_Player2.default, _extends({}, this.state, {
-	        next: this.next,
-	        prev: this.prev,
-	        toggle: this.toggle
-	      }));
-	    }
-	  }]);
-
-	  return _class;
-	}(_react.Component);
-
-	exports.default = _class;
+	  };
+	};
+	
+	var PlayerContainer = exports.PlayerContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Player2.default);
 
 /***/ },
 /* 329 */
@@ -32785,14 +32745,14 @@
 	  value: true
 	});
 	
-	exports.default = function (props) {
-	
-	  var currentSong = props.currentSong;
-	  var isPlaying = props.isPlaying;
-	  var progress = props.progress;
-	  var prev = props.prev;
-	  var toggle = props.toggle;
-	  var next = props.next;
+	exports.default = function (_ref) {
+	  var currentSong = _ref.currentSong,
+	      currentSongList = _ref.currentSongList,
+	      isPlaying = _ref.isPlaying,
+	      progress = _ref.progress,
+	      prev = _ref.prev,
+	      next = _ref.next,
+	      toggle = _ref.toggle;
 	
 	  return _react2.default.createElement(
 	    'footer',
@@ -32810,7 +32770,9 @@
 	        ),
 	        _react2.default.createElement(
 	          'button',
-	          { className: 'btn btn-default', onClick: toggle },
+	          { className: 'btn btn-default', onClick: function onClick() {
+	              return toggle(currentSong, currentSongList);
+	            } },
 	          _react2.default.createElement('span', { className: isPlaying ? 'glyphicon glyphicon-pause' : 'glyphicon glyphicon-play' })
 	        ),
 	        _react2.default.createElement(

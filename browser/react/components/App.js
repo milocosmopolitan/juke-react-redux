@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 import SidebarContainer from '../containers/SidebarContainer';
-import PlayerContainer from '../containers/PlayerContainer';
+import {PlayerContainer} from '../containers/PlayerContainer';
 
 export default function (props) {
   return (

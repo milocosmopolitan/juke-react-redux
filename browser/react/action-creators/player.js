@@ -77,6 +77,8 @@ export const startSong = (song, list) => {
 export const toggleSong = (song, list) => {
   return (dispatch, getState) => {
     const currentState = getState().player;
+
+    console.log(currentState)
     if (currentState.currentSong.id === song.id) {
       dispatch(currentState.isPlaying ? pause() : play());
     } else {
